@@ -234,7 +234,8 @@ Gittip.profile.init = function() {
     });
 
     $('img.avatar').one("error", function () {
-        $(this).attr("src", "avatar-default.png");
+        var defaultAvatar = $(this).data("default-avatar")
+        $(this).attr("src", defaultAvatar);
     });
 
 };
