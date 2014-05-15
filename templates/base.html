@@ -116,6 +116,10 @@
       window.analytics.load = function(key){
         if (document.getElementById('analytics-js')) return;
 
+        // Analytics.js library version to fetch from CDNJS:
+        // See: http://cdnjs.com/libraries/analytics.js
+        var libVersion = '1.3.30';
+
         // Create an async script element based on your key.
         var script = document.createElement('script');
         script.type = 'text/javascript';
@@ -123,8 +127,8 @@
         script.async = true;
         script.src = ('https:' === document.location.protocol
           ? 'https://' : 'http://')
-          + 'cdn.segment.io/analytics.js/v1/'
-          + key + '/analytics.min.js';
+          + 'cdnjs.cloudflare.com/ajax/libs/analytics.js/
+          + libVersion + '/analytics.min.js';
 
         // Insert our script next to the first script element.
         var first = document.getElementsByTagName('script')[0];
@@ -136,7 +140,15 @@
 
       // Load Analytics.js with your key, which will automatically
       // load the tools you've enabled for your account. Boosh!
-      window.analytics.load('YOUR_WRITE_KEY');
+      // window.analytics.load('{{ website.segment_key }}');
+
+      // Configure Google Analytics to bypass Segment.io
+      // See: https://segment.io/docs/integrations/google-analytics/#open-source
+      window.analytics.initialize({
+        'Google Analytics': {
+          trackingId: '{{ website.google_analytics_id }}'
+        }
+      });
 
       // Make the first page call to load the integrations. If
       // you'd like to manually name or tag the page, edit or
