@@ -113,7 +113,7 @@
 
       // Define a method to load Analytics.js from our CDN,
       // and that will be sure to only ever load it once.
-      window.analytics.load = function(key){
+      window.analytics.load = function(callback){
         if (document.getElementById('analytics-js')) return;
 
         // Analytics.js library version to fetch from CDNJS:
@@ -130,24 +130,26 @@
           + 'cdnjs.cloudflare.com/ajax/libs/analytics.js/'
           + libVersion + '/analytics.min.js';
 
+        script.addEventListener('load', function (e) {
+          if(typeof callback == 'function') {
+            callback(e);
+          }
+        }, false);
+
         // Insert our script next to the first script element.
         var first = document.getElementsByTagName('script')[0];
         first.parentNode.insertBefore(script, first);
       };
 
-      // Add a version to keep track of what's in the wild.
-      window.analytics.SNIPPET_VERSION = '2.0.9';
-
-      // Load Analytics.js with your key, which will automatically
-      // load the tools you've enabled for your account. Boosh!
-      // window.analytics.load('{{ website.segment_key }}');
-
-      // Configure Google Analytics to bypass Segment.io
-      // See: https://segment.io/docs/integrations/google-analytics/#open-source
-      window.analytics.initialize({
-        'Google Analytics': {
-          trackingId: '{{ website.google_analytics_id }}'
-        }
+      window.analytics.load(function () {
+        // Configure Google Analytics to bypass Segment.io
+        // See: https://segment.io/docs/integrations/google-analytics/#open-source
+        // See: http://pivotallabs.com/how-to-use-analytics-js-to-fix-your-analytics-code-and-achieve-metrics-nirvana/
+        analytics.initialize({
+          'Google Analytics': {
+            trackingId: '{{ website.google_analytics_id }}',
+          }
+        });
       });
 
       // Make the first page call to load the integrations. If
