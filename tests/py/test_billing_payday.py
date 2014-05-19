@@ -297,17 +297,6 @@ class TestBillingCharges(PaydayHarness):
         after = self.fetch_payday()
         assert after['ncc_failing'] == fail_count + 1
 
-    def test_mark_charge_success(self):
-        self.payday.start()
-        charge_amount, fee = 4, 2
-
-        with self.db.get_cursor() as cursor:
-            self.payday.mark_charge_success(cursor, charge_amount, fee)
-
-        # verify paydays
-        actual = self.fetch_payday()
-        assert actual['ncharges'] == 1
-
 
 class TestPrepHit(PaydayHarness):
 
@@ -468,8 +457,6 @@ class TestBillingPayday(PaydayHarness):
         self.payday.charge_and_or_transfer(ts_start, self.alice, tips, total)
         resulting_payday = self.fetch_payday()
 
-        assert initial_payday['ntippers'] + 1 == resulting_payday['ntippers']
-        assert initial_payday['ntips'] + 2 == resulting_payday['ntips']
         assert initial_payday['nparticipants'] + 1 == resulting_payday['nparticipants']
 
     @mock.patch('gittip.models.participant.Participant.get_tips_and_total')
@@ -762,26 +749,6 @@ class TestBillingTransfer(PaydayHarness):
                                            , 'nori'
                                            , amount
                                             )
-
-    def test_mark_transfer(self):
-        amount = D('1.00')
-
-        # Forces a load with current state in dict
-        before_transfer = self.fetch_payday()
-
-        with self.db.get_cursor() as cursor:
-            self.payday.mark_transfer(cursor, amount)
-
-        # Forces a load with current state in dict
-        after_transfer = self.fetch_payday()
-
-        expected = before_transfer['ntransfers'] + 1
-        actual = after_transfer['ntransfers']
-        assert actual == expected
-
-        expected = before_transfer['transfer_volume'] + amount
-        actual = after_transfer['transfer_volume']
-        assert actual == expected
 
     def test_record_credit_updates_balance(self):
         self.payday.record_credit( amount=D("-1.00")

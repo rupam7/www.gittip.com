@@ -280,14 +280,14 @@ class Participant(Model, MixinTeam):
 
         # Monkey-patch a couple methods, coopting them for callbacks, essentially.
         hack.mark_ach_failed = lambda cursor: None
-        hack.mark_ach_success = lambda cursor, amount, fee: self.set_attributes(balance=0)
 
-        hack.ach_credit( ts_start=None                  # not used
-                       , participant=self
-                       , tips=None                      # not used
-                       , total=Decimal('0.00')          # don't withold anything
-                       , minimum_credit=Decimal('0.00') # send it all
-                        ) # XXX Records the exchange using a different cursor. :-/
+        b = hack.ach_credit( ts_start=None                  # not used
+                           , participant=self
+                           , tips=None                      # not used
+                           , total=Decimal('0.00')          # don't withold anything
+                           , minimum_credit=Decimal('0.00') # send it all
+                            ) # XXX Records the exchange using a different cursor. :-/
+        self.set_attributes(balance=b)
 
 
     def refund_balance_to_patrons(self, cursor):
