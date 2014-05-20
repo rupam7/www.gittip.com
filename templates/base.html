@@ -148,6 +148,9 @@
         analytics.initialize({
           'Google Analytics': {
             trackingId: '{{ website.google_analytics_id }}',
+            // See: https://developers.google.com/analytics/devguides/collection/analyticsjs/field-reference#siteSpeedSampleRate
+            // See: https://github.com/segmentio/analytics.js-integrations/issues/151#issuecomment-43535369
+            siteSpeedSampleRate: 1,
           }
         });
       });
